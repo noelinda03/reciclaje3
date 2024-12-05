@@ -27,26 +27,26 @@ self.addEventListener("fetch", event => {
     event.respondWith(
         caches.match(event.request)
         .then(response => {
-            // Retorna el recurso del caché o intenta obtenerlo de la red
-            return response || (navigator.onLine ? fetch(event.request) : Promise.reject("Offline"));
-        }).catch(error => {
-            console.log("Recurso no disponible en caché y sin conexión:", error);
-        })
-    );
-});
+            if (response) {
+                return response; // Si está en caché, devuelve el recurso
+            }
 
-// Actualiza el caché
-self.addEventListener("activate", event => {
-    const cacheWhitelist = [CACHE_NAME];
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (!cacheWhitelist.includes(cacheName)) {
-                        return caches.delete(cacheName);
+            if (!navigator.onLine) {
+                // Si está offline, devuelve un mensaje JSON o de texto
+                return new Response(
+                    "Estás offline. Algunas funcionalidades podrían no estar disponibles.", {
+                        status: 503,
+                        statusText: "Servicio no disponible",
+                        headers: { "Content-Type": "text/plain" }
                     }
-                })
-            );
+                );
+            }
+
+            return fetch(event.request);
+        })
+        .catch(error => {
+            console.log("Error al intentar obtener el recurso:", error);
+            return new Response("Error al cargar el recurso.", { status: 500 });
         })
     );
 });
