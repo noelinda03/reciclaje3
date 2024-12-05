@@ -5,15 +5,18 @@ const urlsToCache = [
     "/manifest.json",
     "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css",
     "/css/styles.css",
-    "/images/icon-192x192.png", // Asegúrate de que las rutas de los iconos sean correctas
-    "/images/icon-512x512.png" // Asegúrate de que las rutas de los iconos sean correctas
+    "/imagenes/mundo.png", // Asegúrate de que las rutas de los iconos sean correctas
+    "/imagenes/mundo.png" // Asegúrate de que las rutas de los iconos sean correctas
 ];
 
 // Instala el Service Worker y almacena los recursos en caché
 self.addEventListener("install", event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-        .then(cache => cache.addAll(urlsToCache))
+        .then(cache => {
+            console.log("Cachando recursos...", urlsToCache); // Agrega un log aquí
+            return cache.addAll(urlsToCache);
+        })
     );
 });
 
@@ -22,13 +25,23 @@ self.addEventListener("fetch", event => {
     event.respondWith(
         caches.match(event.request)
         .then(response => {
-            // Retorna el recurso del caché o intenta obtenerlo de la red
-            return response || (navigator.onLine ? fetch(event.request) : Promise.reject("Offline"));
-        }).catch(error => {
+            if (response) {
+                return response; // Si está en caché, devuelve el recurso
+            }
+
+            // Si no hay respuesta en caché y no hay red, puedes devolver un mensaje o recurso alternativo
+            if (!navigator.onLine) {
+                return caches.match("/offline.html"); // Asegúrate de tener un archivo offline.html
+            }
+
+            return fetch(event.request); // Si está en línea, obtiene el recurso desde la red
+        })
+        .catch(error => {
             console.log("Recurso no disponible en caché y sin conexión:", error);
         })
     );
 });
+
 
 // Actualiza el caché
 self.addEventListener("activate", event => {
