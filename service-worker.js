@@ -6,7 +6,8 @@ const urlsToCache = [
     "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css",
     "/css/styles.css",
     "/imagenes/mundo.png", // Asegúrate de que las rutas de los iconos sean correctas
-    "/imagenes/mundo.png" // Asegúrate de que las rutas de los iconos sean correctas
+    "/imagenes/mundo.png", // Asegúrate de que las rutas de los iconos sean correctas
+    "/offline.html"
 ];
 
 // Instala el Service Worker y almacena los recursos en caché
