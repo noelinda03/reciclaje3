@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@amcharts/amcharts5": "^5.10.7",
+    "react-router-dom": "^6.28.0"
+  }
+}
